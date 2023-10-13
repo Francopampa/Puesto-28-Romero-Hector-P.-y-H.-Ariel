@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puesto 28 Romero Hector P. y H. Ariel - Pedido</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('agregar').addEventListener('click', function(e) {
+                e.preventDefault();
+                var fruta = document.getElementById('fruta').value;
+                var cantidad = document.getElementById('cantidad').value;
+                var kilo = document.getElementById('kilo').value; // Obtener el tipo de kilo
+
+                if (fruta && cantidad && kilo) {
+                    var listaFrutas = document.getElementById('lista-frutas');
+                    var nuevaFruta = document.createElement('li');
+                    nuevaFruta.textContent = fruta + ' (' + cantidad + ' - ' + kilo + ')';
+                    listaFrutas.appendChild(nuevaFruta);
+
+                    document.getElementById('fruta').value = '';
+                    document.getElementById('cantidad').value = '';
+                    document.getElementById('kilo').value = 'cajon'; // Resetear el tipo de kilo
+                }
+            });
+
+            document.getElementById('enviar').addEventListener('click', function(e) {
+    e.preventDefault();
+
+    var listaFrutas = document.getElementById('lista-frutas');
+    var frutasSeleccionadas = [];
+
+    for (var i = 0; i < listaFrutas.children.length; i++) {
+        frutasSeleccionadas.push(listaFrutas.children[i].textContent);
+    }
+
+    // Añade un campo de entrada al formulario para enviar las frutas seleccionadas
+    var frutasInput = document.createElement('input');
+    frutasInput.type = 'hidden';  // Cambiado a tipo oculto
+    frutasInput.name = 'frutas';
+    frutasInput.value = JSON.stringify(frutasSeleccionadas);  // Cambiado a JSON.stringify
+
+    document.getElementById('pedido').appendChild(frutasInput);
+
+    document.getElementById('pedido').submit();
+});
+
+
+
+
+            document.getElementById('quitar').addEventListener('click', function(e) {
+                e.preventDefault();
+                var listaFrutas = document.getElementById('lista-frutas');
+                while (listaFrutas.firstChild) {
+                    listaFrutas.removeChild(listaFrutas.firstChild);
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Puesto 28 Romero Hector P. y H. Ariel</h1>
+    <h2>Realiza tu pedido</h2>
+
+    <form action="/submit" method="post" id="pedido">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required><br>
+
+        <label for="fruta">Fruta (selecciona o escribe):</label>
+<select id="fruta" name="fruta"> 
+    {% for fruta, cantidad in frutas_disponibles | dictsort %}
+        <option value="{{ fruta }}">{{ fruta }} ({{ cantidad }} disponibles)</option>
+    {% endfor %}
+</select>
+
+
+<br>
+        <label for="kilo">Kilo:</label>
+        <select id="kilo" name="kilo">
+            <option value="Cajon">Cajon</option>
+            <option value="Unidad">Unidad</option>
+            <option value="Bolsa">Bolsa</option>
+        </select>
+
+        <br>
+        
+        <label for="cantidad">Cantidad:</label>
+        <input type="number" id="cantidad" name="cantidad" required min="1"><br>
+
+        <button type="button" id="agregar">Agregar Fruta</button>
+        <button type="button" id="enviar">Enviar Pedido</button>
+        <button type="button" id="quitar">Quitar Frutas</button>
+    </form>
+
+    <h2>Frutas Seleccionadas</h2>
+    <ul id="lista-frutas">
+        <!-- Aquí se mostrarán las frutas seleccionadas -->
+    </ul>
+</body>
+</html>
